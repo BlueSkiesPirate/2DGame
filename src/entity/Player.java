@@ -81,7 +81,10 @@ public class Player extends Entity {
 			direction = "left";
 		} else if (KeyH.rightPressed) {
 			direction = "right";
+		} else if (!(KeyH.upPressed || KeyH.rightPressed || KeyH.downPressed || KeyH.leftPressed)) { // update for key release
+			direction = "stationary";
 		}
+			
 			
 			//Check collision
 			
@@ -168,49 +171,101 @@ public class Player extends Entity {
 				break;
 				
 			}
-			
 		}
-	
-	
 	}
 	
-	
+	BufferedImage image = null;
+	BufferedImage lastUsedImage = null;
+
 	public void draw(Graphics2D g2) {
 
-		
-		BufferedImage image = null;
-		
 		switch(direction) {
+		case "upLeft":
+			if(spriteNum ==1) {
+				image = left1;
+				lastUsedImage = left1;
+			}
+			if(spriteNum ==2) {
+				image = left2;
+				lastUsedImage = left2;
+			}
+			break;
+		case "upRight":
+			if(spriteNum ==1) {
+				image = right1;
+				lastUsedImage = right1;
+			}
+			if(spriteNum ==2) {
+				image = right2;
+				lastUsedImage = right2;
+			}
+			break;
+			case "downLeft":
+			if(spriteNum ==1) {
+				image = left1;
+				lastUsedImage = left1;
+			}
+			if(spriteNum ==2) {
+				image = left2;
+				lastUsedImage = left2;
+			}
+			break;
+		case "downRight":
+			if(spriteNum ==1) {
+				image = right1;
+				lastUsedImage = right1;
+			}
+			if(spriteNum ==2) {
+				image = right2;
+				lastUsedImage = right2;
+			}
+			break;
 		case "up":
 			if(spriteNum ==1) {
 				image = up1;
+				lastUsedImage = up1;
 			}
 			if(spriteNum ==2) {
 				image = up2;
+				lastUsedImage = up2;
 			}
 			break;
 		case "down":
 			if(spriteNum ==1) {
 				image = down1;
+				lastUsedImage = down1;
 			}
 			if(spriteNum ==2) {
 				image = down2;
+				lastUsedImage = down2;
 			}
 			break;
 		case "left":
 			if(spriteNum ==1) {
 				image = left1;
+				lastUsedImage = left1;
 			}
 			if(spriteNum ==2) {
 				image = left2;
+				lastUsedImage = left2;
 			}
 			break;
 		case "right":
 			if(spriteNum ==1) {
 				image = right1;
+				lastUsedImage = right1;
 			}
 			if(spriteNum ==2) {
 				image = right2;
+				lastUsedImage = right2;
+			}
+			break;
+		case "stationary":
+			if(spriteNum ==1) {
+				image = lastUsedImage;
+			}
+			if(spriteNum ==2) {
+				image = lastUsedImage;
 			}
 			break;
 		}
