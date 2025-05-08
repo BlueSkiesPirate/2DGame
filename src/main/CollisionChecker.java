@@ -99,7 +99,7 @@ public class CollisionChecker {
 		int index = 999;
 		
 		for(int i =0; i< gp.obj.length; i++) {
-			if(gp.obj[i] != null) {
+			if(gp.obj[i] != null && gp.obj[i].pickUpAble) {
 				//get entity's solid area position
 				ent.solidArea.x = ent.worldX + ent.solidArea.x;
 				ent.solidArea.y = ent.worldY + ent.solidArea.y;

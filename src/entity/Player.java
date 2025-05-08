@@ -4,66 +4,118 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
 import main.KeyHandler;
+import main.UtilityTool;
+import object.OBJ_Sword;
+import object.OBJ_Key;
 
 public class Player extends Entity {
 
 	
-	GamePanel gp;
+//	GamePanel gp;
 	KeyHandler KeyH;
 	
 	public final int screenX;
 	public final int screenY;
-	public int hasKey = 0;
+//	public int hasKey = 0;
+	
+	//PLAYER INVENTORY
+	public ArrayList<Entity> inventory = new ArrayList<>();
+	public final int maxInventorySize = 20;
 	
 	
 	public Player(GamePanel gp, KeyHandler KeyH) {
-		this.gp = gp;
+		super(gp);
 		this.KeyH = KeyH;
 		solidArea = new Rectangle(); //x,y,width,height (this is used to set the hit-box)
 		solidArea.x= 8;
 		solidArea.y= 16;
 		solidArea.width = 28;
 		solidArea.height = 24;
+//		//ATTACK AREA
+//		attackArea.width =36;
+//		attackArea.height = 36;
 		
 		solidAreaDefaultX = solidArea.x;
 		solidAreaDefaultY = solidArea.y;
 		setDefaultValues();
 		getPlayerImage();
+		setItems();
 		
 		screenX = (gp.screenWidth/2) - (gp.tileSize/2);
 		screenY = (gp.screenHeight/2) - (gp.tileSize/2);
-	}
+		
+
+		}
 	
 	public void setDefaultValues() {
 		worldX = gp.tileSize * 23;
 		worldY=gp.tileSize * 21;
 		speed=4;
 		direction = "down"; //default direction
+		
+		//PLAYER STATUS
+		level =1;
+		maxLife =6;
+		life = maxLife;
+		strength =1;
+		defense = getDefense();
+		attack = getAttack();
+		exp = 0;
+		nextLevelup = 5;
+		money = 0;
+		currentWeapon = new OBJ_Sword(gp);
+	
+	}
+	
+	public void setItems() {
+
+		inventory.add(currentWeapon);
+//		inventory.add(new OBJ_Key(gp));
+	}
+	
+	public int getAttack() {
+//		attackArea =currentWeapon.attackArea;
+		return attack = strength;// * currentWeapon.attackValue;
+	};// * 
+	
+	public int getDefense() {
+		return defense = 1;
 	}
 	
 	public void getPlayerImage() {
+		
+		up1 = setup("pixil-up");
+		up2 = setup("pixil-up-2");
+		down1 = setup("pixil-down");
+		down2 = setup("pixil-down-2");
+		left1 = setup("pixil-left");
+		left2 = setup("pixil-left-2");
+		right1 = setup("player-right");
+		right2 = setup("pixil-right-2");
+	}
+	
+	public BufferedImage setup(String imagePath) {
+		UtilityTool UTool = new UtilityTool();
+		BufferedImage image = null;
+		
 		try {
-			up1 = ImageIO.read(getClass().getResourceAsStream("/player/pixil-up.png"));
-			up2 = ImageIO.read(getClass().getResourceAsStream("/player/pixil-up-2.png"));
+			image = ImageIO.read(getClass().getResourceAsStream("/player/" + imagePath + ".png"));
+			image = UTool.scaleImage(image, gp.tileSize , gp.tileSize);
 			
-			down1 = ImageIO.read(getClass().getResourceAsStream("/player/pixil-down.png"));
-			down2 = ImageIO.read(getClass().getResourceAsStream("/player/pixil-down-2.png"));
-			
-			left1 = ImageIO.read(getClass().getResourceAsStream("/player/pixil-left.png"));
-			left2 = ImageIO.read(getClass().getResourceAsStream("/player/pixil-left-2.png"));
-			
-			right1 = ImageIO.read(getClass().getResourceAsStream("/player/player-right.png"));
-			right2 = ImageIO.read(getClass().getResourceAsStream("/player/pixil-right-2.png"));
-			
-		}catch(IOException e){
+		}catch(IOException e) {
 			e.printStackTrace();
 		}
+		
+		return image;
 	}
+	
+	
 	public void update() {
 		if (KeyH.upPressed && KeyH.leftPressed) {
 			direction = "upLeft";
@@ -87,7 +139,6 @@ public class Player extends Entity {
 			
 			
 			//Check collision
-			
 			collisionOn = false;
 			gp.cChecker.checkTile(this);
 			
@@ -142,35 +193,16 @@ public class Player extends Entity {
 	
 	public void pickUpObject(int i) {
 		if(i != 999) {//any number is fine so long as it isn't used by the object array index
-			String objectName = gp.obj[i].name;
-			switch(objectName) {
-			case "Key":
+			String text;
+			if(inventory.size() < maxInventorySize) {
+				inventory.add(gp.obj[i]);
 				gp.playSoundEffect(1);
-				hasKey++;
-				gp.obj[i] = null;
-				gp.ui.showMessage("You got a key");
-				break;
-			case "Door":
-				if(hasKey >0) {
-					gp.playSoundEffect(2);
-					gp.obj[i] = null;
-					hasKey--;
-					gp.ui.showMessage("door opened");
-				}else {
-					gp.ui.showMessage("looks like you need a key!");
-				}
-				break;
-			case "Chest":
-				gp.ui.gameFinished =true;
-				gp.stopMusic();
-				gp.playSoundEffect(1);
-				break;
-			case "Boots":
-				speed += 2;
-				gp.obj[i]= null;
-				break;
-				
+				text ="Got a" + gp.obj[i].name + "!";
+			}else {
+				text = "You cannot carry anything else";
 			}
+			gp.ui.addMessage(text);
+			gp.obj[i] = null;
 		}
 	}
 	
@@ -178,7 +210,6 @@ public class Player extends Entity {
 	BufferedImage lastUsedImage = null;
 
 	public void draw(Graphics2D g2) {
-
 		switch(direction) {
 		case "upLeft":
 			if(spriteNum ==1) {
@@ -270,14 +301,23 @@ public class Player extends Entity {
 			break;
 		}
 		
-		g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize,null);
-		
-		
-		
-		
-		
+		g2.drawImage(image, screenX, screenY,null);
 		
 	}
+	public void selectItem() {
+		int itemIndex =gp.ui.getItemIndexOnSlot();
+		if(itemIndex < inventory.size()) {
+			Entity selectedItem = inventory.get(itemIndex);
+			if(selectedItem.type ==type_sword || selectedItem.type == type_axe) {
+				currentWeapon = selectedItem;
+				attack = getAttack();
+			}
+			if(selectedItem.type == type_consumable) {
+				selectedItem.use(this);
+			inventory.remove(itemIndex);
+			}
+		}
+		}
 	
 	
 	
