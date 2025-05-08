@@ -17,6 +17,7 @@ public class Sound {
 			soundURL[2] = getClass().getResource("/sound/door.wav");
 			soundURL[3] = getClass().getResource("/sound/theme.wav");
 			soundURL[4] = getClass().getResource("/sound/theme.wav");
+			soundURL[5] = getClass().getResource("/sound/moveSlot.wav");
 			
 		}
 		
@@ -31,7 +32,7 @@ public class Sound {
 			}
 		}
 		public void loop() {
-			clip.loop(clip.LOOP_CONTINUOUSLY);
+			clip.loop(Clip.LOOP_CONTINUOUSLY);
 		}
 		
 		public void start() {

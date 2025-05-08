@@ -4,10 +4,16 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.JPanel;
+
+import entity.Entity;
 import entity.Player;
-import object.SuperObject;
+import entity.Zombie;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable{
@@ -15,7 +21,7 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	
 	//Screen settings
-	final int originalTileSize = 16;//16x16 tiles
+	final int originalTileSize = 20;//16x16 tiles
 	final int scale = 3;//scale the size of character
 	
 	public final int tileSize = originalTileSize * scale;// 48 * 48
@@ -26,15 +32,22 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	//World settings
 	
-	public final int maxWorldCol = 50;
-	public final int maxWorldRow = 50;
+	public final int maxWorldCol = 100;
+	public final int maxWorldRow = 100;
 //	public final int worldWidth = tileSize * maxWorldCol;
 //	public final int worldHeight = tileSize * maxWorldRow;
+	
+	
+	//FOR FULL SCREEN
+	int screenWidth2 = screenWidth;
+	int screenHeight2 =screenHeight;
+	BufferedImage tempScreen;
+	Graphics2D g2;
 	
 	int FPS = 60;
 	
 	TileManager tileM = new TileManager(this);
-	KeyHandler KeyH = new KeyHandler();
+	KeyHandler KeyH = new KeyHandler(this);
 	Sound se = new Sound();
 	Sound music = new Sound();
 	
@@ -44,9 +57,22 @@ public class GamePanel extends JPanel implements Runnable{
 	public AssetSetter aSetter = new AssetSetter(this);
 	public UI ui = new UI(this);
 	Thread gameThread;
-	//Entity and object
+
+	
+	//ENTITY AND OBJECTS
 	public Player player = new Player(this, KeyH);
-	public SuperObject obj[] = new SuperObject[10];
+	public Entity obj[] = new Entity[100];
+	public Entity[] monsters = new Zombie[20]; // Adjust size if needed
+
+	ArrayList<Entity> entityList = new ArrayList<>();
+	
+	//GAME STATE
+	public int gameState;
+	public final int titleState=0;
+	public final int playState = 1;
+	public final int pauseState=2;
+	public final int characterState =3;
+	
 			
 		
 	public GamePanel() {
@@ -60,6 +86,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public void setupGame() {
 		aSetter.setObject();
 		playMusic(0);
+		gameState = playState;
 	}
 	
 	public void startGameThread() {
@@ -67,6 +94,15 @@ public class GamePanel extends JPanel implements Runnable{
 		gameThread.start();//automatically calls the run method
 	}
 
+	public void setFullScreen() {
+	    java.awt.GraphicsEnvironment ge = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment();
+	    java.awt.GraphicsDevice gd = ge.getDefaultScreenDevice();
+	    gd.setFullScreenWindow(Main.window);
+
+	    screenWidth2 = Main.window.getWidth();
+	    screenHeight2 = Main.window.getHeight();
+	}
+	
 	@Override
 	public void run() { //Game loop
 		
@@ -91,7 +127,7 @@ public class GamePanel extends JPanel implements Runnable{
 				drawCount++;
 			}
 			if(timer >= 1000000000) {
-				System.out.println("FPS: " + drawCount);
+//				System.out.println("FPS: " + drawCount);
 				drawCount =0;
 				timer =0;
 			}
@@ -101,30 +137,70 @@ public class GamePanel extends JPanel implements Runnable{
 		
 	}
 	public void update() {
-		player.update();
+		
+	        if (gameState == playState) {
+	            player.update();
+	 
+	            for (int i = 0; i < monsters.length; i++) {
+	                if (monsters[i] != null) {
+	                    ((Zombie) monsters[i]).update();
+	                }
+	            }
+	          
+	        }
+
+	    
+	    if(gameState == pauseState) {
+
+	    }
+	    if(gameState == characterState) {
+	       
+	    }
+		
 	}
 	
-	public void paintComponent(Graphics g) { //standard method
-		
-		super.paintComponent(g);
-		
-		Graphics2D g2 = (Graphics2D)g; //Graphics2D extends the Graphics class
-		
-		tileM.draw(g2);
-		for(int i= 0; i<obj.length; i++) {
-			if(obj[i] != null) {
-				obj[i].draw(g2, this);
-			}
-		}
-		player.draw(g2);
-		ui.draw(g2);
-		g2.dispose();// Dispose of this graphics context and release any system recourses that it is using
+	@Override
+	public void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+
+	    Graphics2D g2 = (Graphics2D) g;
+
+	    // Calculate scaling factor
+	    double scaleX = (double) screenWidth2 / screenWidth;
+	    double scaleY = (double) screenHeight2 / screenHeight;
+	    double scale = Math.min(scaleX, scaleY); // maintain aspect ratio
+
+	    // Center the scaled game screen
+	    int xOffset = (int) ((screenWidth2 - (screenWidth * scale)) / 2);
+	    int yOffset = (int) ((screenHeight2 - (screenHeight * scale)) / 2);
+
+	    g2.translate(xOffset, yOffset);   // move origin to center
+	    g2.scale(scale, scale);           // scale the virtual resolution
+
+	    // Draw game content at virtual resolution (768x576)
+	    tileM.draw(g2);
+	    for (Entity monster : monsters) {
+	        if (monster != null) entityList.add(monster);
+	    }
+	    entityList.add(player);
+	    for (Entity objEntity : obj) {
+	        if (objEntity != null) entityList.add(objEntity);
+	    }
+
+	    Collections.sort(entityList, Comparator.comparingInt(e -> e.worldY));
+	    for (Entity e : entityList) e.draw(g2);
+	    entityList.clear();
+
+	    ui.draw(g2);
+
+	    g2.dispose();
 	}
+
 	
 	public void playMusic(int i) {
 		music.setFile(i);
-		music.start();
-		music.loop();
+//		music.start();
+//		music.loop();
 		
 	}
 	
@@ -135,8 +211,8 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void playSoundEffect(int i) {
 		
-		se.setFile(i);
-		se.start();
+//		se.setFile(i);
+//		se.start();
 	}
 	
 	

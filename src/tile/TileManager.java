@@ -1,14 +1,18 @@
 package tile;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
 import main.GamePanel;
+import main.UtilityTool;
 
 public class TileManager {
 GamePanel gp;
@@ -17,31 +21,67 @@ public int mapTileNum[][];
 
 public TileManager(GamePanel gp) {
 	this.gp = gp;
-	tile = new Tile[10];
+	tile = new Tile[160];
  mapTileNum =new int[gp.maxWorldCol][gp.maxWorldRow];
 	getTileImage();
-	loadMap("/maps/world01.txt");
+	
+	//MAP
+	loadMap("/maps/world03.txt"); 
 }
 public void getTileImage() {
+	
+
+
+		ArrayList<Integer> BlackListedTiles = new ArrayList<>(Arrays.asList(19,29,39,99,104,105,106,107,159)); //Null tiles
+		ArrayList<Integer> TilesWithCollision = new ArrayList<>(Arrays.asList(114,115,135,141)); //Null tiles
+		int row =0;
+		int col =0;
+		boolean collision = false;
+		
+			setup(0, "tile_"+ row +"_0", false);
+
+			
+	//I KNOW THERE ARE 160 FILES IN THIS FOLDER
+			for(int i =0; i<160; i++ ) {
+				
+				if(!BlackListedTiles.contains(i)) {
+					if(TilesWithCollision.contains(i)) {//DRAW THE COLLISIONS FOR THE TILES
+						collision=true;
+					}
+					setup(i , "tile_" + row + "_"+col, collision); 
+					
+				}
+				
+				if(col == 9){//CHECK IF WE SHOULD INCREMENT ROWS and reset col =0;
+					row++;
+					col =0;
+				}else {
+					col++;
+				}
+				collision=false;
+		
+			}
+}
+
+
+
+public void setup(int index, String imagePath, boolean collision) {
+	
+	UtilityTool UTool =new UtilityTool();
+	
 	try {
-		tile[0] = new Tile();
-		tile[0].image = ImageIO.read(getClass().getResourceAsStream("/tiles/grass.png"));
-		
-		tile[1] = new Tile();
-		tile[1].image = ImageIO.read(getClass().getResourceAsStream("/tiles/wall.png"));
-		tile[1].collision = true;
-		
-		tile[2] = new Tile();
-		tile[2].image = ImageIO.read(getClass().getResourceAsStream("/tiles/water.png"));
-		
-		tile[3] = new Tile();
-		tile[3].image = ImageIO.read(getClass().getResourceAsStream("/tiles/tree.png"));
-		tile[3].collision = true;
-		
+		tile[index] = new Tile();
+		tile[index].image = ImageIO.read(getClass().getResourceAsStream("/TerrainTiles/" + imagePath + ".png"));
+		tile[index].image =UTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
+		tile[index].collision = collision;
 	}catch(IOException e) {
 		e.printStackTrace();
 	}
 }
+
+
+
+
 
 public void loadMap(String file) {
 	try {
@@ -55,7 +95,7 @@ public void loadMap(String file) {
 			String line = br.readLine();
 			
 			while(col < gp.maxWorldCol) {
-				String numbers[] = line.split(" ");
+				String numbers[] = line.split(","); //CHANGED TO "," FROM " "
 				
 				int num  = Integer.parseInt(numbers[col]);
 				
