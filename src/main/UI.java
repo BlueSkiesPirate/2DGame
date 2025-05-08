@@ -226,6 +226,9 @@ public class UI {
 		int x = gp.tileSize *1;
 		int y = gp.tileSize *1;
 		
+		
+		
+		
 		g2.drawString(text, x, y);
 	}
 	
