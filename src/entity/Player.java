@@ -28,6 +28,8 @@ public class Player extends Entity {
 	public ArrayList<Entity> inventory = new ArrayList<>();
 	public final int maxInventorySize = 20;
 	
+	public boolean invincible = false;
+	int invincibleCounter = 0;
 	
 	public Player(GamePanel gp, KeyHandler KeyH) {
 		super(gp);
@@ -70,6 +72,8 @@ public class Player extends Entity {
 		nextLevelup = 5;
 		money = 0;
 		currentWeapon = new OBJ_Sword(gp);
+		
+		
 	
 	}
 	
@@ -90,14 +94,14 @@ public class Player extends Entity {
 	
 	public void getPlayerImage() {
 		
-		up1 = setup("pixil-up");
-		up2 = setup("pixil-up-2");
-		down1 = setup("pixil-down");
-		down2 = setup("pixil-down-2");
-		left1 = setup("pixil-left");
-		left2 = setup("pixil-left-2");
-		right1 = setup("player-right");
-		right2 = setup("pixil-right-2");
+		up1 = setup("up1");
+		up2 = setup("up2");
+		down1 = setup("down1");
+		down2 = setup("down2");
+		left1 = setup("left1");
+		left2 = setup("left2");
+		right1 = setup("right1");
+		right2 = setup("right2");
 	}
 	
 	public BufferedImage setup(String imagePath) {
@@ -136,7 +140,8 @@ public class Player extends Entity {
 		} else if (!(KeyH.upPressed || KeyH.rightPressed || KeyH.downPressed || KeyH.leftPressed)) { // update for key release
 			direction = "stationary";
 		}
-			
+	
+
 			
 			//Check collision
 			collisionOn = false;
@@ -189,6 +194,15 @@ public class Player extends Entity {
 				}
 				spriteCounter =0;
 			}
+			
+			if (invincible) {
+			    invincibleCounter++;
+			    if (invincibleCounter > 60) {
+			        invincible = false;
+			        invincibleCounter = 0;
+			    }
+			}
+
 		}
 	
 	public void pickUpObject(int i) {
@@ -208,6 +222,8 @@ public class Player extends Entity {
 	
 	BufferedImage image = null;
 	BufferedImage lastUsedImage = null;
+
+	
 
 	public void draw(Graphics2D g2) {
 		switch(direction) {

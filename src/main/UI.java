@@ -5,7 +5,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.text.DecimalFormat;
+
+import javax.imageio.ImageIO;
 
 import object.OBJ_Key;
 
@@ -221,16 +224,31 @@ public class UI {
 	}
 	
 	public void drawPlayScreen(int worldX, int worldY) {
-		
-		String text = "Coordinates: X = " + (worldX/gp.tileSize) + "  Y = " + (worldY/gp.tileSize);
-		int x = gp.tileSize *1;
-		int y = gp.tileSize *1;
-		
-		
-		
-		
-		g2.drawString(text, x, y);
+	    String text = "Coordinates: X = " + (worldX / gp.tileSize) + "  Y = " + (worldY / gp.tileSize);
+	    int x = gp.tileSize * 1;
+	    int y = gp.tileSize * 2;
+
+	    // Draw coordinates
+	    g2.drawString(text, x, y);
+
+	    // Calculate health level from 0 to 5
+	    int healthLevel = (int)(((double)gp.player.life / gp.player.maxLife) * 5);
+	    healthLevel = Math.max(0, Math.min(5, healthLevel)); // Clamp between 0 and 5
+
+	    BufferedImage healthBarImage = null;
+	    try {
+	        healthBarImage = ImageIO.read(getClass().getResourceAsStream("/healthBar/hpBar_" + healthLevel + ".png"));
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+
+	    // Draw health bar on screen
+	    if (healthBarImage != null) {
+	        g2.drawImage(healthBarImage, gp.tileSize, 1, gp.tileSize * 4, gp.tileSize *3, null);
+	    }
+
 	}
+
 	
  	public void drawTitleScreen() {
 		String text = "Title";

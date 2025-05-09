@@ -1,5 +1,6 @@
 package entity;
 
+import java.awt.Rectangle;
 import java.util.Random;
 
 import main.GamePanel;
@@ -8,6 +9,7 @@ public class Zombie extends Entity {
 
     private int actionLockCounter = 0;
     private Random random = new Random();
+    private int attackCooldown = 0; // Cooldown counter
 
     public Zombie(GamePanel gp) {
         super(gp);
@@ -27,8 +29,6 @@ public class Zombie extends Entity {
 
         direction = "down";
         getImage();
-      
-
     }
 
     public void getImage() {
@@ -45,56 +45,42 @@ public class Zombie extends Entity {
     @Override
     public void setAction() {
         actionLockCounter++;
-
         if (actionLockCounter == 120) {
             int i = random.nextInt(4);
-
             switch (i) {
                 case 0: direction = "up"; break;
                 case 1: direction = "down"; break;
                 case 2: direction = "left"; break;
                 case 3: direction = "right"; break;
             }
-
             actionLockCounter = 0;
         }
     }
-    
 
-//    @Override
     public void update() {
         int dx = gp.player.worldX - worldX;
         int dy = gp.player.worldY - worldY;
-
         double distance = Math.sqrt(dx * dx + dy * dy);
 
-        // If the player is near, chase
-        if(distance<1) {
-        	
-        }else if (distance < 8 * gp.tileSize) {
-            // Normalize direction
+        if (distance < 8 * gp.tileSize) {
+            // Chase
             double angle = Math.atan2(dy, dx);
             int moveX = (int) Math.round(Math.cos(angle) * speed);
             int moveY = (int) Math.round(Math.sin(angle) * speed);
 
-            // Try moving horizontally
             direction = (moveX > 0) ? "right" : (moveX < 0) ? "left" : direction;
             collisionOn = false;
             worldX += moveX;
             gp.cChecker.checkTile(this);
             if (collisionOn) worldX -= moveX;
 
-            // Try moving vertically
             direction = (moveY > 0) ? "down" : (moveY < 0) ? "up" : direction;
             collisionOn = false;
             worldY += moveY;
             gp.cChecker.checkTile(this);
             if (collisionOn) worldY -= moveY;
-
         } else {
-            // Random walk logic
             setAction();
-
             collisionOn = false;
             gp.cChecker.checkTile(this);
 
@@ -108,6 +94,22 @@ public class Zombie extends Entity {
             }
         }
 
+        // ATTACK PLAYER if colliding
+        Rectangle zombieHitbox = new Rectangle(worldX + solidArea.x, worldY + solidArea.y, solidArea.width, solidArea.height);
+        Rectangle playerHitbox = new Rectangle(gp.player.worldX + gp.player.solidArea.x, gp.player.worldY + gp.player.solidArea.y, gp.player.solidArea.width, gp.player.solidArea.height);
+
+        if (zombieHitbox.intersects(playerHitbox)) {
+            if (attackCooldown == 0) {
+                attackPlayer();
+                attackCooldown = 60; // 1 second cooldown
+            }
+        }
+
+
+        if (attackCooldown > 0) {
+            attackCooldown--;
+        }
+
         // Sprite animation
         spriteCounter++;
         if (spriteCounter > 24) {
@@ -116,4 +118,10 @@ public class Zombie extends Entity {
         }
     }
 
+    private void attackPlayer() {
+        if (gp.player.invincible == false) {
+            gp.player.life -= 1;
+            gp.player.invincible = true;
+        }
+    }
 }
