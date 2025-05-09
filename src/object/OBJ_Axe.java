@@ -7,7 +7,7 @@ public class OBJ_Axe extends Entity{
 
 	public OBJ_Axe(GamePanel gp) {
 		super(gp);
-		type = type_axe;
+		type = type_tool;
 		name = "axe";
 		down1 = setup("/objects/Axe");
 		attackValue = 1;

@@ -7,6 +7,8 @@ public class KeyHandler implements KeyListener {
 
     GamePanel gp;
     public boolean upPressed, downPressed, leftPressed, rightPressed, upLeftPressed, upRightPressed, downLeftPressed, downRightPressed;
+    public boolean key1Pressed, key2Pressed, key3Pressed;
+
 
     // Prevents multiple toggles while holding 'P'
     private boolean pPressedLast = false;
@@ -74,34 +76,46 @@ public class KeyHandler implements KeyListener {
     }
 
     public void playState(int code) {
-        if (code == KeyEvent.VK_W && code == KeyEvent.VK_A) {
-            upLeftPressed = true;
-        }
-        if (code == KeyEvent.VK_W && code == KeyEvent.VK_D) {
-            upRightPressed = true;
-        }
-        if (code == KeyEvent.VK_S && code == KeyEvent.VK_A) {
-            downLeftPressed = true;
-        }
-        if (code == KeyEvent.VK_S && code == KeyEvent.VK_D) {
-            downRightPressed = true;
-        }
-        if (code == KeyEvent.VK_W) {
-            upPressed = true;
-        }
-        if (code == KeyEvent.VK_S) {
-            downPressed = true;
-        }
-        if (code == KeyEvent.VK_D) {
-            rightPressed = true;
-        }
-        if (code == KeyEvent.VK_A) {
-            leftPressed = true;
-        }
+    	    if (code == KeyEvent.VK_W && code == KeyEvent.VK_A) {
+    	        upLeftPressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_W && code == KeyEvent.VK_D) {
+    	        upRightPressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_S && code == KeyEvent.VK_A) {
+    	        downLeftPressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_S && code == KeyEvent.VK_D) {
+    	        downRightPressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_W) {
+    	        upPressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_S) {
+    	        downPressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_D) {
+    	        rightPressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_A) {
+    	        leftPressed = true;
+    	    }
 
-        if (code == KeyEvent.VK_Q) {
-            gp.gameState = gp.characterState;
-        }
+    	    if (code == KeyEvent.VK_Q) {
+    	        gp.gameState = gp.characterState;
+    	    }
+
+    	    // 🔽 Add this for weapon switching
+    	    if (code == KeyEvent.VK_1) {
+    	        key1Pressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_2) {
+    	        key2Pressed = true;
+    	    }
+    	    if (code == KeyEvent.VK_3) {
+    	        key3Pressed = true;
+    	    }
+
     }
 
     public void characterState(int code) {
@@ -188,5 +202,15 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_A) {
             leftPressed = false;
         }
+        if (code == KeyEvent.VK_1) {
+            key1Pressed = false;
+        }
+        if (code == KeyEvent.VK_2) {
+            key2Pressed = false;
+        }
+        if (code == KeyEvent.VK_3) {
+            key3Pressed = false;
+        }
+
     }
 }

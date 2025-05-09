@@ -47,7 +47,7 @@ public class GamePanel extends JPanel implements Runnable{
 	int FPS = 60;
 	
 	TileManager tileM = new TileManager(this);
-	KeyHandler KeyH = new KeyHandler(this);
+	public KeyHandler KeyH = new KeyHandler(this);
 	Sound se = new Sound();
 	Sound music = new Sound();
 	
@@ -65,13 +65,15 @@ public class GamePanel extends JPanel implements Runnable{
 	public Entity[] monsters = new Zombie[20]; // Adjust size if needed
 
 	ArrayList<Entity> entityList = new ArrayList<>();
+	public ArrayList<Entity> projectiles = new ArrayList<>();
+	
 	
 	//GAME STATE
 	public int gameState;
-	public final int titleState=0;
-	public final int playState = 1;
-	public final int pauseState=2;
-	public final int characterState =3;
+	public final static int titleState=0;
+	public final static int playState = 1;
+	public final static int pauseState=2;
+	public final static int characterState =3;
 	
 			
 		
@@ -80,6 +82,16 @@ public class GamePanel extends JPanel implements Runnable{
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true); // helps improve the rendering performance
 		this.addKeyListener(KeyH);
+		
+		this.addMouseListener(new java.awt.event.MouseAdapter() {
+		    @Override
+		    public void mousePressed(java.awt.event.MouseEvent e) {
+		        if (gameState == playState) {
+		            player.shoot(e.getX(), e.getY());
+		        }
+		    }
+		});
+
 		this.setFocusable(true);
 	}
 	
@@ -146,6 +158,12 @@ public class GamePanel extends JPanel implements Runnable{
 	                    ((Zombie) monsters[i]).update();
 	                }
 	            }
+	            for (int i = 0; i < projectiles.size(); i++) {
+	                Entity projectile = projectiles.get(i);
+	                if (projectile != null) projectile.update();
+	            }
+
+
 	          
 	        }
 
@@ -191,7 +209,11 @@ public class GamePanel extends JPanel implements Runnable{
 	    for (Entity e : entityList) e.draw(g2);
 	    entityList.clear();
 
+	    for (Entity bullet : projectiles) {
+	        bullet.draw(g2);
+	    }
 	    ui.draw(g2);
+	    
 
 	    g2.dispose();
 	}

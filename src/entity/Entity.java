@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -51,15 +52,18 @@ public class Entity {
 	public int defenseValue;
 	public String description="";
 	
+	//WEAPON ATTRIBUTES
+	public int reloadTime =6;
 	
 	
 	//TYPE
 	public int type;
 	public final int type_player = 0;
 	public final int type_monster =1;
-	public final int type_sword =3;
-	public final int type_axe =4;
+	public final int type_weapon =3;
+	public final int type_tool =4;
 	public final int type_consumable =6;
+
 	
 	
 	
@@ -146,6 +150,6 @@ public class Entity {
 		return image;
 	}
 	
-//	public void update() {}
+	public void update() {}
 	
 }

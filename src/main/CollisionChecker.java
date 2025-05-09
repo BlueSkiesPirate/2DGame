@@ -10,17 +10,26 @@ public class CollisionChecker {
 	}
 	public void checkTile(Entity ent) {
 	
-		int entityLeftWorldX = ent.worldX + ent.solidArea.x;
-		int entityRightWorldX = ent.worldX + ent.solidArea.x + ent.solidArea.width;
-		int entityTopWorldY = ent.worldY + ent.solidArea.y;
-		int entityBottomWorldY = ent.worldY + ent.solidArea.y + ent.solidArea.height;
-		
-		int entityLeftCol = entityLeftWorldX/gp.tileSize;
-		int entityRightCol = entityRightWorldX/gp.tileSize;
-		int entityTopRow = entityTopWorldY/ gp.tileSize;
-		int entityBottomRow = entityBottomWorldY/gp.tileSize;
-		
-		int tileNum1, tileNum2;
+		  int entityLeftWorldX = ent.worldX + ent.solidArea.x;
+		    int entityRightWorldX = ent.worldX + ent.solidArea.x + ent.solidArea.width;
+		    int entityTopWorldY = ent.worldY + ent.solidArea.y;
+		    int entityBottomWorldY = ent.worldY + ent.solidArea.y + ent.solidArea.height;
+
+		    // Calculate tile coordinates (row and column)
+		    int entityLeftCol = entityLeftWorldX / gp.tileSize;
+		    int entityRightCol = entityRightWorldX / gp.tileSize;
+		    int entityTopRow = entityTopWorldY / gp.tileSize;
+		    int entityBottomRow = entityBottomWorldY / gp.tileSize;
+
+		    // Ensure valid tile coordinates
+		    if (entityLeftCol < 0 || entityRightCol < 0 || entityTopRow < 0 || entityBottomRow < 0 ||
+		        entityLeftCol >= gp.maxWorldCol || entityRightCol >= gp.maxWorldCol ||
+		        entityTopRow >= gp.maxWorldRow || entityBottomRow >= gp.maxWorldRow) {
+		        return; // Skip checking if coordinates are out of bounds
+		    }
+
+		    int tileNum1, tileNum2;
+
 		
 		switch(ent.direction) {
 		case "upLeft":
@@ -97,6 +106,7 @@ public class CollisionChecker {
 	
 	public int checkObject(Entity ent, boolean player) {
 		int index = 999;
+
 		
 		for(int i =0; i< gp.obj.length; i++) {
 			if(gp.obj[i] != null && gp.obj[i].pickUpAble) {
@@ -167,6 +177,31 @@ public class CollisionChecker {
 		return index;
 	}
 	
+	public boolean checkTileSimple(Entity ent) {
+	    int entityLeftWorldX = ent.worldX + ent.solidArea.x;
+	    int entityRightWorldX = ent.worldX + ent.solidArea.x + ent.solidArea.width;
+	    int entityTopWorldY = ent.worldY + ent.solidArea.y;
+	    int entityBottomWorldY = ent.worldY + ent.solidArea.y + ent.solidArea.height;
+
+	    int entityLeftCol = entityLeftWorldX / gp.tileSize;
+	    int entityRightCol = entityRightWorldX / gp.tileSize;
+	    int entityTopRow = entityTopWorldY / gp.tileSize;
+	    int entityBottomRow = entityBottomWorldY / gp.tileSize;
+
+	    try {
+	        int tileNum1 = gp.tileM.mapTileNum[entityLeftCol][entityTopRow];
+	        int tileNum2 = gp.tileM.mapTileNum[entityRightCol][entityTopRow];
+	        int tileNum3 = gp.tileM.mapTileNum[entityLeftCol][entityBottomRow];
+	        int tileNum4 = gp.tileM.mapTileNum[entityRightCol][entityBottomRow];
+
+	        return gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision ||
+	               gp.tileM.tile[tileNum3].collision || gp.tileM.tile[tileNum4].collision;
+	    } catch (ArrayIndexOutOfBoundsException e) {
+	        // Treat out-of-bounds bullets as hitting a wall
+	        return true;
+	    }
+	}
+
 	
 }
 

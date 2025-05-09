@@ -11,13 +11,14 @@ import javax.imageio.ImageIO;
 import main.GamePanel;
 import main.KeyHandler;
 import main.UtilityTool;
-import object.OBJ_Sword;
+import object.OBJ_Knife;
+import object.OBJ_Shutgun;
+import object.OBJ_Bullet;
 import object.OBJ_Key;
 
 public class Player extends Entity {
 
 	
-//	GamePanel gp;
 	KeyHandler KeyH;
 	
 	public final int screenX;
@@ -30,6 +31,7 @@ public class Player extends Entity {
 	
 	public boolean invincible = false;
 	int invincibleCounter = 0;
+	public ArrayList<Entity> equippedWeapons = new ArrayList<>(3); // 3 equipped slots
 	
 	public Player(GamePanel gp, KeyHandler KeyH) {
 		super(gp);
@@ -52,8 +54,24 @@ public class Player extends Entity {
 		screenX = (gp.screenWidth/2) - (gp.tileSize/2);
 		screenY = (gp.screenHeight/2) - (gp.tileSize/2);
 		
+	
+
+		
 
 		}
+	
+	public void shoot(int mouseX, int mouseY) {
+	    // Center of player (assuming player is drawn in the center of screen)
+	    int playerX = gp.screenWidth / 2;
+	    int playerY = gp.screenHeight / 2;
+
+	    double angle = Math.atan2(mouseY - playerY, mouseX - playerX);
+
+	    // Create bullet with direction
+	    OBJ_Bullet bullet = new OBJ_Bullet(gp, playerX, playerY, angle);
+	    gp.projectiles.add(bullet); // You'll need to manage this list and update/draw bullets
+	}
+
 	
 	public void setDefaultValues() {
 		worldX = gp.tileSize * 23;
@@ -63,7 +81,7 @@ public class Player extends Entity {
 		
 		//PLAYER STATUS
 		level =1;
-		maxLife =6;
+		maxLife =5;
 		life = maxLife;
 		strength =1;
 		defense = getDefense();
@@ -71,16 +89,26 @@ public class Player extends Entity {
 		exp = 0;
 		nextLevelup = 5;
 		money = 0;
-		currentWeapon = new OBJ_Sword(gp);
+		currentWeapon = new OBJ_Shutgun(gp); //
 		
 		
 	
 	}
 	
 	public void setItems() {
-
+		equippedWeapons.clear(); 
 		inventory.add(currentWeapon);
-//		inventory.add(new OBJ_Key(gp));
+
+		// Populate equippedWeapons with first 3 weapon-type items from inventory
+		int count = 0;
+		for (Entity item : inventory) {
+		    if ((item.type == type_weapon|| item.type == type_tool)  && count < 3) {
+		        equippedWeapons.add(item);
+		        System.out.println((equippedWeapons.get(count).name));
+		        count++;
+		    }
+		}
+
 	}
 	
 	public int getAttack() {
@@ -121,6 +149,21 @@ public class Player extends Entity {
 	
 	
 	public void update() {
+		
+		if (gp.KeyH.key1Pressed) {
+		    switchEquippedWeapon(0);
+		    gp.KeyH.key1Pressed = false;
+		}
+		if (gp.KeyH.key2Pressed) {
+		    switchEquippedWeapon(1);
+		    gp.KeyH.key2Pressed = false;
+		}
+		if (gp.KeyH.key3Pressed) {
+		    switchEquippedWeapon(2);
+		    gp.KeyH.key3Pressed = false;
+		}
+
+		
 		if (KeyH.upPressed && KeyH.leftPressed) {
 			direction = "upLeft";
 		} else if (KeyH.upPressed && KeyH.rightPressed) {
@@ -212,12 +255,14 @@ public class Player extends Entity {
 				inventory.add(gp.obj[i]);
 				gp.playSoundEffect(1);
 				text ="Got a" + gp.obj[i].name + "!";
+//				setItems();
 			}else {
 				text = "You cannot carry anything else";
 			}
 			gp.ui.addMessage(text);
 			gp.obj[i] = null;
 		}
+		
 	}
 	
 	BufferedImage image = null;
@@ -320,11 +365,21 @@ public class Player extends Entity {
 		g2.drawImage(image, screenX, screenY,null);
 		
 	}
+	
+	public void switchEquippedWeapon(int index) {
+	    if (equippedWeapons.get(index) != null) {
+	        currentWeapon = equippedWeapons.get(index);
+	        attack = getAttack();
+	        gp.ui.addMessage("Switched to " + currentWeapon.name);
+	    }
+	}
+	
+	
 	public void selectItem() {
 		int itemIndex =gp.ui.getItemIndexOnSlot();
 		if(itemIndex < inventory.size()) {
 			Entity selectedItem = inventory.get(itemIndex);
-			if(selectedItem.type ==type_sword || selectedItem.type == type_axe) {
+			if(selectedItem.type ==type_weapon || selectedItem.type == type_tool ) {
 				currentWeapon = selectedItem;
 				attack = getAttack();
 			}

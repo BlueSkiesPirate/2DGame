@@ -4,12 +4,17 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
 
+import entity.Entity;
 import object.OBJ_Key;
 
 public class UI {
@@ -36,7 +41,6 @@ public class UI {
 		this.gp = gp;
 		arial_25 = new Font("Arial", Font.PLAIN, 25);
 		arial_80B = new Font("Arial", Font.BOLD, 80);
-		OBJ_Key key = new OBJ_Key(gp);
 //		keyImage = key.image;
 	}
 	
@@ -51,6 +55,7 @@ public class UI {
 		g2.setColor(Color.WHITE);
 		
 		if(gp.gameState == gp.playState) {
+			drawGun();
 			drawPlayScreen(gp.player.worldX, gp.player.worldY);
 		}
 		if(gp.gameState == gp.pauseState) {
@@ -165,7 +170,7 @@ public class UI {
 		for(int i=0; i<gp.player.inventory.size(); i++) {
 			
 			//EQUIP CURSOR
-			if(gp.player.inventory.get(i) == gp.player.currentWeapon){// I can add a second condition for a secondary weapon
+			if(gp.player.inventory.get(i) == gp.player.currentWeapon ||gp.player.equippedWeapons.contains(gp.player.inventory.get(i))){// I can add a second condition for a secondary weapon
 				g2.setColor(new Color(240,190,90));
 				g2.fillRoundRect(slotX, slotY, gp.tileSize, gp.tileSize, 10, 10);
 			}
@@ -256,17 +261,20 @@ public class UI {
 	    	g2.drawImage(smallGunContainerImage2, (gp.tileSize * 12) + 50, gp.tileSize * 9 -150, 200, 150,null);
 	    	
 	    	
-	    	if(gp.player.inventory.get(0).down1 != null) {
-	    		g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 11) + 135, gp.tileSize * 9 +65, 75, 75,null);
+	    	if(gp.player.equippedWeapons.get(0) != null) {
+	    		g2.drawImage(gp.player.equippedWeapons.get(0).down1, (gp.tileSize * 11) + 135, gp.tileSize * 9 +65, 75, 75,null);
 	    	}
-	    	
-//	    	if(gp.player.inventory.get(1)!= null) {
-	    		g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 12) + 150, gp.tileSize * 9 - 95, 50, 50,null);
-//	    	}
-	    
 //	    	
-	    	g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 12) + 150, gp.tileSize * 9 - 20, 50, 50,null);
+////	    	if(gp.player.inventory.get(1)!= null) {
+//	    		g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 12) + 150, gp.tileSize * 9 - 95, 50, 50,null);
+////	    	}
+//	    
+////	    	
+//	    	g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 12) + 150, gp.tileSize * 9 - 20, 50, 50,null);
 	   
+	    	// Draw equipped weapons (bottom-left corner)
+
+
 		    
 	    }
 	    
@@ -306,4 +314,51 @@ public class UI {
 		int x = endX - length;
 		return x;
 	}
+	
+	public void drawGun() {
+		
+	    // Get the center of the screen (and the gun position)
+	    int centerX = (gp.screenWidth / 2) - (gp.tileSize / 2)+ 30; 
+	    int centerY = (gp.screenHeight / 2) - (gp.tileSize / 2)+30; 
+
+	    // Get the mouse coordinates
+//	    PointerInfo a = MouseInfo.getPointerInfo();
+	    if(MouseInfo.getPointerInfo() != null) {
+	    	Point point = gp.getMousePosition();
+	    	
+	    	if(point != null) {
+	    		int mouseX = (int) point.getX();
+			    int mouseY = (int) point.getY();
+
+			    // Calculate the angle between the gun and the mouse
+			    double angle = Math.atan2(mouseY - centerY, mouseX - centerX);
+
+			    // Draw the line from the center of the screen to the mouse position
+			    g2.drawLine(centerX, centerY, mouseX, mouseY);
+
+			    // Save the original transformation state
+			    AffineTransform original = g2.getTransform();
+
+			    // Apply the rotation to the gun image around its center
+			    g2.rotate(angle, centerX, centerY);
+
+			    // Draw the rotated gun image at the center position
+			    // Make sure to adjust the position of the gun relative to its size
+			    g2.drawImage(gp.player.inventory.get(0).down1, 
+			                 centerX - (gp.tileSize / 2) , 
+			                 centerY - (gp.tileSize / 2) , 
+			                 gp.tileSize, gp.tileSize, null);
+
+			    // Restore the original transformation
+			    g2.setTransform(original);
+	    	}else {
+	    		System.out.print("Mouse is outside of Window");
+	    	}
+	        
+			}
+	
+	    }
+	    
+;
+	
 }
