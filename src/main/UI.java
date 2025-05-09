@@ -224,27 +224,57 @@ public class UI {
 	}
 	
 	public void drawPlayScreen(int worldX, int worldY) {
-	    String text = "Coordinates: X = " + (worldX / gp.tileSize) + "  Y = " + (worldY / gp.tileSize);
+	    String text = "X = " + (worldX / gp.tileSize) + "  Y = " + (worldY / gp.tileSize);
 	    int x = gp.tileSize * 1;
-	    int y = gp.tileSize * 2;
+	    int y = 100;
 
 	    // Draw coordinates
 	    g2.drawString(text, x, y);
-
+	    
+	
 	    // Calculate health level from 0 to 5
 	    int healthLevel = (int)(((double)gp.player.life / gp.player.maxLife) * 5);
 	    healthLevel = Math.max(0, Math.min(5, healthLevel)); // Clamp between 0 and 5
 
 	    BufferedImage healthBarImage = null;
+	    BufferedImage bigGunContainerImage = null;
+	    BufferedImage smallGunContainerImage1 = null;
+	    BufferedImage smallGunContainerImage2 = null;
 	    try {
 	        healthBarImage = ImageIO.read(getClass().getResourceAsStream("/healthBar/hpBar_" + healthLevel + ".png"));
+	        bigGunContainerImage = ImageIO.read(getClass().getResourceAsStream("/weapon_containers/big1.png"));
+	        smallGunContainerImage1 = ImageIO.read(getClass().getResourceAsStream("/weapon_containers/small1.png"));
+	        smallGunContainerImage2 = ImageIO.read(getClass().getResourceAsStream("/weapon_containers/small2.png"));
+	        
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
 
+	    if(bigGunContainerImage != null || smallGunContainerImage1 != null|| smallGunContainerImage2 != null) {
+	    	g2.drawImage(bigGunContainerImage, gp.tileSize * 11 +25, gp.tileSize * 9, 300, 200,null);
+	    	g2.drawImage(smallGunContainerImage1, (gp.tileSize * 12) + 50, gp.tileSize * 9 -75, 200, 150,null);
+	    	g2.drawImage(smallGunContainerImage2, (gp.tileSize * 12) + 50, gp.tileSize * 9 -150, 200, 150,null);
+	    	
+	    	
+	    	if(gp.player.inventory.get(0).down1 != null) {
+	    		g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 11) + 135, gp.tileSize * 9 +65, 75, 75,null);
+	    	}
+	    	
+//	    	if(gp.player.inventory.get(1)!= null) {
+	    		g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 12) + 150, gp.tileSize * 9 - 95, 50, 50,null);
+//	    	}
+	    
+//	    	
+	    	g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 12) + 150, gp.tileSize * 9 - 20, 50, 50,null);
+	   
+		    
+	    }
+	    
+
+	    
 	    // Draw health bar on screen
 	    if (healthBarImage != null) {
-	        g2.drawImage(healthBarImage, gp.tileSize, 1, gp.tileSize * 4, gp.tileSize *3, null);
+	        g2.drawImage(healthBarImage, 25, -25, gp.tileSize * 4, gp.tileSize *3, null);
 	    }
 
 	}
