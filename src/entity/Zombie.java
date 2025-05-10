@@ -62,6 +62,7 @@ public class Zombie extends Entity {
         int dy = gp.player.worldY - worldY;
         double distance = Math.sqrt(dx * dx + dy * dy);
 
+  
         if (distance < 8 * gp.tileSize) {
             // Chase
             double angle = Math.atan2(dy, dx);
@@ -93,6 +94,8 @@ public class Zombie extends Entity {
                 }
             }
         }
+        
+        
 
         // ATTACK PLAYER if colliding
         Rectangle zombieHitbox = new Rectangle(worldX + solidArea.x, worldY + solidArea.y, solidArea.width, solidArea.height);

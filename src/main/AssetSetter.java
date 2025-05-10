@@ -67,6 +67,43 @@ public class AssetSetter {
 	    gp.monsters[i].worldX = (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;// (int) (gp.tileSize * ((Math.random() * 35) +30))
 	    gp.monsters[i].worldY =  (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;;
 	    i++;
+	    
+	    gp.monsters[i] = new Zombie(gp);
+	    gp.monsters[i].worldX = (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;// (int) (gp.tileSize * ((Math.random() * 35) +30))
+	    gp.monsters[i].worldY =  (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;;
+	    i++;
+
+	    
+	    gp.monsters[i] = new Zombie(gp);
+	    gp.monsters[i].worldX = (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;// (int) (gp.tileSize * ((Math.random() * 35) +30))
+	    gp.monsters[i].worldY =  (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;;
+	    i++;
+
+	    
+	    gp.monsters[i] = new Zombie(gp);
+	    gp.monsters[i].worldX = (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;// (int) (gp.tileSize * ((Math.random() * 35) +30))
+	    gp.monsters[i].worldY =  (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;;
+	    i++;
+
+	    
+	    gp.monsters[i] = new Zombie(gp);
+	    gp.monsters[i].worldX = (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;// (int) (gp.tileSize * ((Math.random() * 35) +30))
+	    gp.monsters[i].worldY =  (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;;
+	    i++;
+
+	    
+	    gp.monsters[i] = new Zombie(gp);
+	    gp.monsters[i].worldX = (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;// (int) (gp.tileSize * ((Math.random() * 35) +30))
+	    gp.monsters[i].worldY =  (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;;
+	    i++;
+
+	    
+	    gp.monsters[i] = new Zombie(gp);
+	    gp.monsters[i].worldX = (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;// (int) (gp.tileSize * ((Math.random() * 35) +30))
+	    gp.monsters[i].worldY =  (int) ((Math.random() * (35 - 30)) +30) * gp.tileSize;;
+	    i++;
+
+	    
 
 	    
 	    new OBJ_Tree(gp, gp.tileSize * 30, gp.tileSize * 20, i);

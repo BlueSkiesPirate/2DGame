@@ -74,6 +74,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public final static int playState = 1;
 	public final static int pauseState=2;
 	public final static int characterState =3;
+	public final static int deadState =4;
 	
 			
 		
@@ -87,7 +88,7 @@ public class GamePanel extends JPanel implements Runnable{
 		    @Override
 		    public void mousePressed(java.awt.event.MouseEvent e) {
 		        if (gameState == playState) {
-		            player.shoot(e.getX(), e.getY());
+		            ui.shoot();
 		        }
 		    }
 		});
@@ -98,7 +99,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public void setupGame() {
 		aSetter.setObject();
 		playMusic(0);
-		gameState = playState;
+		gameState = titleState;
 	}
 	
 	public void startGameThread() {
@@ -150,14 +151,22 @@ public class GamePanel extends JPanel implements Runnable{
 	}
 	public void update() {
 		
+		if(player.life <= 0) {
+			gameState = pauseState;
+		}
 	        if (gameState == playState) {
 	            player.update();
 	 
 	            for (int i = 0; i < monsters.length; i++) {
-	                if (monsters[i] != null) {
-	                    ((Zombie) monsters[i]).update();
+	                Entity monster = monsters[i];
+	                if (monster != null) {
+	                    monster.update();
+	                    if (monster.life <= 0) {
+	                        monsters[i] = null; // REMOVE dead zombie
+	                    }
 	                }
 	            }
+
 	            for (int i = 0; i < projectiles.size(); i++) {
 	                Entity projectile = projectiles.get(i);
 	                if (projectile != null) projectile.update();
@@ -168,6 +177,9 @@ public class GamePanel extends JPanel implements Runnable{
 	        }
 
 	    
+	        
+	        
+	        
 	    if(gameState == pauseState) {
 
 	    }
@@ -221,8 +233,8 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void playMusic(int i) {
 		music.setFile(i);
-//		music.start();
-//		music.loop();
+		music.start();
+		music.loop();
 		
 	}
 	
@@ -233,8 +245,8 @@ public class GamePanel extends JPanel implements Runnable{
 	
 	public void playSoundEffect(int i) {
 		
-//		se.setFile(i);
-//		se.start();
+		se.setFile(i);
+		se.start();
 	}
 	
 	

@@ -7,7 +7,11 @@ import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -264,20 +268,29 @@ public class UI {
 	    	if(gp.player.equippedWeapons.get(0) != null) {
 	    		g2.drawImage(gp.player.equippedWeapons.get(0).down1, (gp.tileSize * 11) + 135, gp.tileSize * 9 +65, 75, 75,null);
 	    	}
-//	    	
-////	    	if(gp.player.inventory.get(1)!= null) {
-//	    		g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 12) + 150, gp.tileSize * 9 - 95, 50, 50,null);
-////	    	}
-//	    
-////	    	
-//	    	g2.drawImage(gp.player.inventory.get(0).down1, (gp.tileSize * 12) + 150, gp.tileSize * 9 - 20, 50, 50,null);
-	   
-	    	// Draw equipped weapons (bottom-left corner)
 
-
-		    
 	    }
 	    
+	    for (Entity zombie : gp.monsters) {
+	        if (zombie == null) continue;
+
+	        // Draw health bar
+	        int barWidth = 40;
+	        int barHeight = 6;
+	        int healthBarX = zombie.worldX - gp.player.worldX + gp.screenWidth/2 - barWidth/2 + zombie.solidArea.width/2;
+	        int healthBarY = zombie.worldY - gp.player.worldY + gp.screenHeight/2 - 20;
+
+	        float healthPercent = (float) zombie.life / (float) zombie.maxLife;
+
+	        g2.setColor(Color.DARK_GRAY);
+	        g2.fillRect(healthBarX, healthBarY, barWidth, barHeight);
+
+	        g2.setColor(Color.GREEN);
+	        g2.fillRect(healthBarX, healthBarY, (int)(barWidth * healthPercent), barHeight);
+
+	        g2.setColor(Color.BLACK);
+	        g2.drawRect(healthBarX, healthBarY, barWidth, barHeight);
+	    }
 
 	    
 	    // Draw health bar on screen
@@ -289,10 +302,21 @@ public class UI {
 
 	
  	public void drawTitleScreen() {
-		String text = "Title";
+		String text = "Zombie Fight";
 		int x = getXforCenterText(text);
-		int y = gp.screenHeight/2;
+		int y = gp.tileSize *3;
 		
+		
+		
+		g2.drawString(text, x, y);
+		
+		int width = gp.tileSize *8;
+		int height = gp.tileSize *5;
+		
+		
+		g2.drawRect((gp.tileSize * gp.maxScreenCol)/2 -(width /2), (gp.tileSize * gp.maxScreenRow)/2 -(height/2), width, height);
+		y = (gp.tileSize * gp.maxScreenRow)/2;
+		text = "press Enter to play";
 		g2.drawString(text, x, y);
 	}
 	
@@ -334,7 +358,8 @@ public class UI {
 			    double angle = Math.atan2(mouseY - centerY, mouseX - centerX);
 
 			    // Draw the line from the center of the screen to the mouse position
-			    g2.drawLine(centerX, centerY, mouseX, mouseY);
+			    g2.setColor(new Color(255,0,0));
+//			    g2.drawLine(centerX, centerY, mouseX, mouseY);
 
 			    // Save the original transformation state
 			    AffineTransform original = g2.getTransform();
@@ -348,17 +373,89 @@ public class UI {
 			                 centerX - (gp.tileSize / 2) , 
 			                 centerY - (gp.tileSize / 2) , 
 			                 gp.tileSize, gp.tileSize, null);
-
+			 
 			    // Restore the original transformation
 			    g2.setTransform(original);
+			    g2.setColor(new Color(255,255,255));
 	    	}else {
 	    		System.out.print("Mouse is outside of Window");
 	    	}
 	        
 			}
 	
-	    }
+	}
+	
+
+
+	public void shoot() {
+//	    Graphics2D g2 = (Graphics2D) gp.getGraphics(); // optional if you want to draw for debug
 	    
+	    int centerX = (gp.screenWidth / 2) - (gp.tileSize / 2)+ 30; 
+	    int centerY = (gp.screenHeight / 2) - (gp.tileSize / 2)+30; 
+	    
+	    if(MouseInfo.getPointerInfo() != null) {
+	    	Point point = gp.getMousePosition();
+	    	
+	    	if(point != null) {
+	    		int mouseX = (int) point.getX();
+			    int mouseY = (int) point.getY();
+	    double angle = Math.atan2(mouseY - centerY, mouseX - centerX);
+	    
+	    // Hitbox dimensions
+	    int rectWidth = gp.tileSize * 7;
+	    int rectHeight = 26;
+
+	    // Center of player in world coordinates
+	    int playerCenterX = gp.player.worldX + gp.tileSize / 2;
+	    int playerCenterY = gp.player.worldY + gp.tileSize / 2;
+
+	    // Create the unrotated hitbox rectangle starting from player center
+
+
+	    // Create an AffineTransform for rotation
+	    AffineTransform transform = new AffineTransform();
+	    // Rotate around player's center
+	    double angleRad = Math.toRadians(angle); // set this to your desired angle
+	    transform.rotate(angle, playerCenterX, playerCenterY);
+	    
+	    Rectangle2D.Float hitboxRect = new Rectangle2D.Float(
+		        playerCenterX,
+		        playerCenterY - rectHeight / 2,
+		        rectWidth,
+		        rectHeight
+		    );
+
+	
+
+	    // Create the rotated hitbox
+	    Shape rotatedHitbox = transform.createTransformedShape(hitboxRect);
+	    Area hitboxArea = new Area(rotatedHitbox);
+
+	    // Optional: draw for debug
+	     g2.setColor(Color.RED);
+	     g2.draw(rotatedHitbox);
+	     g2.drawRect(playerCenterX, playerCenterY, rectWidth, rectHeight);
+
+	    for (Entity zombie : gp.monsters) {
+	        if (zombie == null) continue;
+
+	        Rectangle2D.Float zombieRect = new Rectangle2D.Float(
+	            zombie.worldX,
+	            zombie.worldY,
+	            zombie.solidArea.width,
+	            zombie.solidArea.height
+	        );
+
+	        Area zombieArea = new Area(zombieRect);
+
+	        if (hitboxArea.intersects(zombieRect.getBounds2D())) {
+	            System.out.println("Zombie hit!");
+	            zombie.life -= 1;
+	        }
+	    }
+	}
+	    }}
+
 ;
 	
 }
