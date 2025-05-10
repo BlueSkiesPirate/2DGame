@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import entity.Entity;
 import entity.Player;
@@ -67,7 +69,8 @@ public class GamePanel extends JPanel implements Runnable{
 	ArrayList<Entity> entityList = new ArrayList<>();
 	public ArrayList<Entity> projectiles = new ArrayList<>();
 	
-	
+	private JButton titleButton;
+
 	//GAME STATE
 	public int gameState;
 	public final static int titleState=0;
@@ -75,6 +78,7 @@ public class GamePanel extends JPanel implements Runnable{
 	public final static int pauseState=2;
 	public final static int characterState =3;
 	public final static int deadState =4;
+	public final static int winState =5;
 	
 			
 		
@@ -82,6 +86,7 @@ public class GamePanel extends JPanel implements Runnable{
 		this.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		this.setBackground(Color.black);
 		this.setDoubleBuffered(true); // helps improve the rendering performance
+		 this.setLayout(null); // required for absolute positioning
 		this.addKeyListener(KeyH);
 		
 		this.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -99,7 +104,8 @@ public class GamePanel extends JPanel implements Runnable{
 	public void setupGame() {
 		aSetter.setObject();
 		playMusic(0);
-		gameState = titleState;
+		gameState = winState;
+//		 showTitleScreenUI();
 	}
 	
 	public void startGameThread() {
@@ -149,11 +155,17 @@ public class GamePanel extends JPanel implements Runnable{
 		}
 		
 	}
+	
+	public void win() {
+			gameState = winState;
+	}
 	public void update() {
-		
+	
 		if(player.life <= 0) {
-			gameState = pauseState;
+			gameState = deadState;
 		}
+		
+	
 	        if (gameState == playState) {
 	            player.update();
 	 
@@ -188,6 +200,40 @@ public class GamePanel extends JPanel implements Runnable{
 	    }
 		
 	}
+	
+//	private void showTitleScreenUI() {
+//		System.out.println("Showing title screen UI..."); 
+//	    if (titleButton == null) {
+//	        titleButton = new JButton("Enter");
+//	        titleButton.setBounds(300, 200, 150, 500);
+//	        
+//	        // Add action listener
+//	        titleButton.addActionListener(e -> {
+//	            // Change game state after the button click
+//	            gameState = playState;
+//	            
+//	            // Remove the button after the action
+//	            this.remove(titleButton);
+//	            titleButton = null; // mark for cleanup to prevent memory leak
+//	            
+//	            // Regain keyboard focus for game
+//	            this.requestFocusInWindow();
+//	            
+//	            // Repaint immediately to remove button and update the screen
+//	            this.repaint();
+//	        });
+//	        
+//	        // Add button to the panel
+//	        this.add(titleButton);
+//	        
+//	        // Call revalidate and repaint to ensure button visibility
+//	        this.revalidate(); // Revalidate layout after adding button
+//	        this.repaint(); // Repaint immediately to show the button
+//	    }
+//	}
+
+
+	
 	
 	@Override
 	public void paintComponent(Graphics g) {
@@ -226,7 +272,6 @@ public class GamePanel extends JPanel implements Runnable{
 	    }
 	    ui.draw(g2);
 	    
-
 	    g2.dispose();
 	}
 

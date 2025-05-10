@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 
 import entity.Entity;
 import object.OBJ_Key;
@@ -67,7 +68,13 @@ public class UI {
 		}
 		if(gp.gameState == gp.titleState) {
 			drawTitleScreen();
+		}if(gp.gameState == gp.deadState) {
+			drawDeadScreen();
+		}if(gp.gameState == gp.winState) {
+			drawWinScreen();
 		}
+		
+		
 		
 		
 		//CHARACTER STATE
@@ -236,8 +243,22 @@ public class UI {
 	    String text = "X = " + (worldX / gp.tileSize) + "  Y = " + (worldY / gp.tileSize);
 	    int x = gp.tileSize * 1;
 	    int y = 100;
-
+	    int monsterCount =0;
 	    // Draw coordinates
+	    g2.drawString(text, x, y);
+	    for (int i = 0; i < gp.monsters.length; i++) {
+            Entity monster = gp.monsters[i];
+            if (monster != null) {
+               monsterCount++;
+   
+            }
+        }
+	    
+	    if(monsterCount ==0) {
+	    	gp.win();
+	    	}
+	    text = "Zombies Remaining: " + monsterCount;
+	    x= getXforCenterText(text);
 	    g2.drawString(text, x, y);
 	    
 	
@@ -310,14 +331,36 @@ public class UI {
 		
 		g2.drawString(text, x, y);
 		
-		int width = gp.tileSize *8;
-		int height = gp.tileSize *5;
+		int width = gp.tileSize *5;
+		int height = gp.tileSize *3;
+		BufferedImage image = null;
+		try {
+			image = ImageIO.read(getClass().getResourceAsStream("/title.png"));
+		} catch (IOException e) {
+	
+			e.printStackTrace();
+		}
+		g2.drawImage(image, 0, 0, gp.tileSize * gp.maxScreenCol, gp.tileSize * gp.maxScreenRow,null);
 		
-		
-		g2.drawRect((gp.tileSize * gp.maxScreenCol)/2 -(width /2), (gp.tileSize * gp.maxScreenRow)/2 -(height/2), width, height);
+		g2.setColor(new Color(10,10,10));
+		g2.fillRect((gp.tileSize * gp.maxScreenCol)/2 -(width /2), (gp.tileSize * gp.maxScreenRow)/2 -(height/2) + 25, width, height);
+		g2.setColor(new Color(255,255,255));
 		y = (gp.tileSize * gp.maxScreenRow)/2;
-		text = "press Enter to play";
+		text = "PLAY";
 		g2.drawString(text, x, y);
+		text = "QUIT";
+		g2.drawString(text, x, y +35);
+		text = "Future feature";
+		g2.drawString(text, x, y +70);
+		
+		if(commandNum ==0) {
+			g2.drawString(">", x - 20, y);
+		}else if(commandNum ==1){
+			g2.drawString(">", x - 20, y +35);
+		}else {
+			g2.drawString(">", x - 20, y +70);
+		}
+		
 	}
 	
 	public void addMessage(String text) {
@@ -385,7 +428,39 @@ public class UI {
 	
 	}
 	
+public void drawDeadScreen() {
+	String text = "You Died";
+	int x = getXforCenterText(text);
+	int y = y = (gp.tileSize * gp.maxScreenRow)/2;
+	
+	
+	
+	int width = gp.tileSize *5;
+	int height = gp.tileSize *3;
+	
+	
+	g2.setColor(new Color(10,10,10));
+	g2.fillRect((gp.tileSize * gp.maxScreenCol)/2 -(width /2), (gp.tileSize * gp.maxScreenRow)/2 -(height/2), width, height);
+	g2.setColor(new Color(255,255,255));
+	g2.drawString(text, x, y);
+}
 
+public void drawWinScreen() {
+	String text = "You Won";
+	int x = getXforCenterText(text);
+	int y = (gp.tileSize * gp.maxScreenRow)/2;
+	
+	
+	
+	int width = gp.tileSize *5;
+	int height = gp.tileSize *3;
+	
+	
+	g2.setColor(new Color(10,10,10));
+	g2.fillRect((gp.tileSize * gp.maxScreenCol)/2 -(width /2), (gp.tileSize * gp.maxScreenRow)/2 -(height/2), width, height);
+	g2.setColor(new Color(255,255,255));
+	g2.drawString(text, x, y);
+}
 
 	public void shoot() {
 //	    Graphics2D g2 = (Graphics2D) gp.getGraphics(); // optional if you want to draw for debug

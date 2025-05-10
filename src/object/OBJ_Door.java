@@ -16,6 +16,7 @@ public class OBJ_Door extends Entity {
 		
 		name = "Door";
 		down1 =setup("/objects/Door");
+		pickUpAble =false;
 		collision =true;
 		solidArea.x = 0;
 		solidArea.y = 16;

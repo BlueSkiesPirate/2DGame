@@ -67,10 +67,11 @@ public class KeyHandler implements KeyListener {
                 gp.gameState = gp.playState;
             }
             if (gp.ui.commandNum == 1) {
-                // Future feature
+            	 System.exit(0);
+               
             }
             if (gp.ui.commandNum == 2) {
-                System.exit(0);
+            	 // Future feature
             }
         }
     }
