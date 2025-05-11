@@ -15,8 +15,8 @@ public class Zombie extends Entity {
         super(gp);
 
         name = "Zombie";
-        speed = 2;
-        maxLife = 4;
+        speed = 4;
+        maxLife = 10;
         life = maxLife;
         type = type_monster;
         pickUpAble = false;
