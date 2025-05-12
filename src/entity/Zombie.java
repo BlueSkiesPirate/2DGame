@@ -15,8 +15,8 @@ public class Zombie extends Entity {
         super(gp);
 
         name = "Zombie";
-        speed = 2;
-        maxLife = 4;
+        speed = (int) Math.round((Math.random() * (4 -2)) +2);
+        maxLife = 40;
         life = maxLife;
         type = type_monster;
         pickUpAble = false;
@@ -104,7 +104,7 @@ public class Zombie extends Entity {
         if (zombieHitbox.intersects(playerHitbox)) {
             if (attackCooldown == 0) {
                 attackPlayer();
-                attackCooldown = 60; // 1 second cooldown
+                attackCooldown = 30; // 1 second cooldown
             }
         }
 

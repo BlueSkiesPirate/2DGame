@@ -93,7 +93,10 @@ public class GamePanel extends JPanel implements Runnable{
 		    @Override
 		    public void mousePressed(java.awt.event.MouseEvent e) {
 		        if (gameState == playState) {
+		        	player.currentWeapon.showGunFlash = true;
+		        	System.out.println("showGUnflash");
 		            ui.shoot();
+		            
 		        }
 		    }
 		});

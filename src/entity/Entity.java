@@ -20,6 +20,7 @@ public class Entity {
 	public BufferedImage image, image2, image3;
 	public boolean collision = false;
 	public BufferedImage up1, up2, down1, down2, left1,left2, right1,right2; //It describes an image with an accessible buffer of image data
+	public BufferedImage shooting;
 	public String direction = "down";
 	
 	
@@ -30,6 +31,9 @@ public class Entity {
 	public boolean collisionOn = false;
 	public boolean pickUpAble = true;
 	public int imageSize = 64;
+	
+	public int maxClip;
+	public int currentAmmo;
 	
 	//CHARACTER ATTRIBUTES
 	public int speed;
@@ -63,6 +67,10 @@ public class Entity {
 	public final int type_weapon =3;
 	public final int type_tool =4;
 	public final int type_consumable =6;
+
+	public boolean showGunFlash = false;
+	public int flashCounter =60;
+	public int currentCount =flashCounter;
 
 	
 	
@@ -151,5 +159,15 @@ public class Entity {
 	}
 	
 	public void update() {}
+
+	public void showFlash() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void showFLash() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

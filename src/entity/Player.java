@@ -85,11 +85,12 @@ public class Player extends Entity {
 		life = maxLife;
 		strength =1;
 		defense = getDefense();
+		currentWeapon = new OBJ_Shutgun(gp); //
 		attack = getAttack();
 		exp = 0;
 		nextLevelup = 5;
 		money = 0;
-		currentWeapon = new OBJ_Shutgun(gp); //
+
 		
 		
 	
@@ -113,7 +114,7 @@ public class Player extends Entity {
 	
 	public int getAttack() {
 //		attackArea =currentWeapon.attackArea;
-		return attack = strength;// * currentWeapon.attackValue;
+		return attack = strength * currentWeapon.attackValue;// * currentWeapon.attackValue;
 	};// * 
 	
 	public int getDefense() {
